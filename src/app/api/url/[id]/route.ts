@@ -142,7 +142,6 @@ export async function PUT(
         const formData = await request.formData();
         const title = formData.get("title") as string;
         const isPublic = formData.get("public") as string;
-        const exploreByAll = formData.get("exploreByAll") as string;
         const description = formData.get("description") as string;
         const image = formData.get("image") as File | null | string;
         const externalURLs = formData.get("externalURLs") as string;
@@ -339,7 +338,6 @@ export async function PUT(
                 description: description?.trim() || "",
                 image: imageUrl,
                 public: isPublic === "true",
-                exploreByAll: exploreByAll === "true",
                 template: JSON.parse(template),
                 userAlias: userAliasData,
                 updatedAt: new Date(),

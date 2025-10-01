@@ -87,7 +87,6 @@ const Url = () => {
     const [image, setImage] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string>("");
     const [isPrivate, setIsPrivate] = useState(false);
-    const [exploreByAll, setExploreByAll] = useState(false);
 
     const [addURLModal, setAddURLModal] = useState(false);
     const [editURLModal, setEditURLModal] = useState(false);
@@ -119,7 +118,6 @@ const Url = () => {
     const [originalDescription, setOriginalDescription] = useState("");
     const [originalImage, setOriginalImage] = useState<File | null>(null);
     const [originalIsPrivate, setOriginalIsPrivate] = useState(false);
-    const [originalExploreByAll, setOriginalExploreByAll] = useState(false);
     const [originalExternalURLs, setOriginalExternalURLs] = useState<any[]>([]);
     const [originalTemplate, setOriginalTemplate] = useState<any>(null);
     const [originalUserAlias, setOriginalUserAlias] = useState<any>(null);
@@ -267,7 +265,6 @@ const Url = () => {
         const descriptionChanged = description !== originalDescription;
         const imageChanged = image !== originalImage;
         const privacyChanged = isPrivate !== originalIsPrivate;
-        const exploreByAllChanged = exploreByAll !== originalExploreByAll;
         const templateChanged = template !== originalTemplate;
         const userAliasChanged =
             JSON.stringify(originalUserAlias) !== JSON.stringify(userAlias);
@@ -291,7 +288,6 @@ const Url = () => {
             descriptionChanged ||
             imageChanged ||
             privacyChanged ||
-            exploreByAllChanged ||
             templateChanged ||
             userAliasChanged ||
             urlsChanged
@@ -470,7 +466,6 @@ const Url = () => {
                 });
 
                 formData.append("public", (!isPrivate).toString());
-                formData.append("exploreByAll", exploreByAll.toString());
                 formData.append("template", JSON.stringify(template));
                 formData.append("userAlias", JSON.stringify(userAlias));
 
@@ -496,7 +491,6 @@ const Url = () => {
                 setOriginalDescription(description);
                 setOriginalImage(image);
                 setOriginalIsPrivate(isPrivate);
-                setOriginalExploreByAll(exploreByAll);
                 setOriginalExternalURLs([...externalURLs]);
                 setOriginalTemplate(template);
                 setOriginalUserAlias(userAlias);
@@ -550,7 +544,6 @@ const Url = () => {
             });
 
             formData.append("public", (!isPrivate).toString());
-            formData.append("exploreByAll", exploreByAll.toString());
             formData.append("template", JSON.stringify(template));
             formData.append("userAlias", JSON.stringify(userAlias));
             // If image is a base64 string, convert it back to a file
@@ -579,7 +572,6 @@ const Url = () => {
             setOriginalDescription(description);
             setOriginalImage(image);
             setOriginalIsPrivate(isPrivate);
-            setOriginalExploreByAll(exploreByAll);
             setOriginalExternalURLs([...externalURLs]);
             setOriginalTemplate(template);
             setOriginalUserAlias(userAlias);
@@ -800,7 +792,6 @@ const Url = () => {
                     }));
                 setExternalUrls(externalUrlsWithImageFile);
                 setIsPrivate(!response.data.url.public);
-                setExploreByAll(response.data.url.exploreByAll || false);
                 setEditMode(true);
                 setPreviewMode(false);
                 setTemplate(response.data.url.template);
@@ -819,9 +810,6 @@ const Url = () => {
                 setOriginalDescription(response.data.url.description);
                 setOriginalImage(response.data.url.image);
                 setOriginalIsPrivate(!response.data.url.public);
-                setOriginalExploreByAll(
-                    response.data.url.exploreByAll || false
-                );
                 setOriginalExternalURLs(externalUrlsWithImageFile);
                 setOriginalTemplate(response.data.url.template);
                 if (response.data.url.userAlias) {
@@ -847,7 +835,6 @@ const Url = () => {
                 setOriginalDescription("");
                 setOriginalImage(null);
                 setOriginalIsPrivate(false);
-                setOriginalExploreByAll(false);
                 setOriginalExternalURLs([]);
                 setOriginalTemplate(null);
                 setUserAlias(null);
@@ -1818,9 +1805,6 @@ const Url = () => {
                                             value={isPrivate.toString()}
                                             className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 focus:ring-2"
                                             onChange={() => {
-                                                if (!isPrivate === false) {
-                                                    setExploreByAll(false);
-                                                }
                                                 setIsPrivate(!isPrivate);
                                             }}
                                             defaultChecked={!isPrivate}
@@ -1846,27 +1830,6 @@ const Url = () => {
                                     </div>
                                 )}
                             </div>
-                            {!isPrivate && (
-                                <div className="flex justify-start gap-2 y cursor-pointer hover:text-gray-400">
-                                    <div className="flex flex-col gap-3">
-                                        <div className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                checked={exploreByAll}
-                                                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 focus:ring-2"
-                                                onChange={() =>
-                                                    setExploreByAll(
-                                                        !exploreByAll
-                                                    )
-                                                }
-                                            />
-                                            <label className="ms-2 text-sm font-medium text-gray-900">
-                                                Explore by All
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
                             <div className="w-full">
                                 <Button
                                     text={isSaving ? "Saving..." : "Save"}
@@ -2092,83 +2055,6 @@ const Url = () => {
                     onSave={handleAddURL}
                     content={
                         <div className="flex flex-col gap-4">
-                            {newUrl !== "" && (
-                                <div className="flex items-center justify-center">
-                                    <div className="relative w-20 h-20 rounded-sm">
-                                        <input
-                                            id="newUrlImageInput"
-                                            type="file"
-                                            accept="image/*"
-                                            className="hidden w-full shadow-sm rounded-md px-2 hover:cursor-pointer hover:color-primary"
-                                            onChange={(e) => {
-                                                const file =
-                                                    e.target.files?.[0];
-                                                if (file) {
-                                                    setNewUrlImage({
-                                                        preview:
-                                                            URL.createObjectURL(
-                                                                file
-                                                            ),
-                                                        file: file,
-                                                    });
-                                                }
-                                            }}
-                                        />
-                                        {newUrlImage?.preview ? (
-                                            <div className="w-20 h-20 rounded-sm border border-gray-200">
-                                                <img
-                                                    src={newUrlImage?.preview}
-                                                    alt="URL Image"
-                                                    className="w-full h-full object-cover"
-                                                />
-                                            </div>
-                                        ) : (
-                                            <div className="w-20 h-20 rounded-sm border border-gray-200">
-                                                <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-200">
-                                                    <span className="text-sm">
-                                                        No Image
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        <div
-                                            className="absolute -top-5 -right-2 rounded-full bg-white group hover:bg-gray-200 cursor-pointer shadow-md h-9 w-9 text-center flex justify-center items-center"
-                                            onClick={() => {
-                                                if (newUrlImage?.file == null) {
-                                                    document
-                                                        .getElementById(
-                                                            "newUrlImageInput"
-                                                        )
-                                                        ?.click();
-                                                } else {
-                                                    setNewUrlImage({
-                                                        preview:
-                                                            getFaviconUrl(
-                                                                newUrl
-                                                            ),
-                                                        file: null as any,
-                                                    });
-                                                }
-                                            }}
-                                        >
-                                            <span className="text-xs text-gray-800">
-                                                {/* {newUrlImage?.preview ? (
-                                                <CloseCircle />
-                                            ) : (
-                                                <Edit />
-                                            )} */}
-
-                                                {newUrlImage?.file == null ? (
-                                                    <Edit />
-                                                ) : (
-                                                    <CloseCircle />
-                                                )}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
                             <TextField
                                 placeholder="URL"
                                 type="text"
@@ -2210,79 +2096,6 @@ const Url = () => {
                     onSave={handleUpdateURL}
                     content={
                         <div className="flex flex-col gap-4">
-                            {newUrl !== "" && (
-                                <div className="flex items-center justify-center">
-                                    <div className="relative w-20 h-20 rounded-sm">
-                                        <input
-                                            id="editUrlImageInput"
-                                            type="file"
-                                            accept="image/*"
-                                            className="hidden w-full shadow-sm rounded-md px-2 hover:cursor-pointer hover:color-primary"
-                                            onChange={(e) => {
-                                                const file =
-                                                    e.target.files?.[0];
-                                                if (file) {
-                                                    setEditUrlImage({
-                                                        preview:
-                                                            URL.createObjectURL(
-                                                                file
-                                                            ),
-                                                        file: file,
-                                                    });
-                                                }
-                                            }}
-                                        />
-                                        {editUrlImage?.preview ? (
-                                            <div className="w-20 h-20 rounded-sm border border-gray-200">
-                                                <img
-                                                    src={editUrlImage?.preview}
-                                                    alt="URL Image"
-                                                    className="w-full h-full object-cover"
-                                                />
-                                            </div>
-                                        ) : (
-                                            <div className="w-20 h-20 rounded-sm border border-gray-200">
-                                                <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-200">
-                                                    <span className="text-sm">
-                                                        No Image
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        <div
-                                            className="absolute -top-5 -right-2 rounded-full bg-white group hover:bg-gray-200 cursor-pointer shadow-md h-9 w-9 text-center flex justify-center items-center"
-                                            onClick={() => {
-                                                if (
-                                                    editUrlImage?.file == null
-                                                ) {
-                                                    document
-                                                        .getElementById(
-                                                            "editUrlImageInput"
-                                                        )
-                                                        ?.click();
-                                                } else {
-                                                    setEditUrlImage({
-                                                        preview:
-                                                            getFaviconUrl(
-                                                                newUrl
-                                                            ),
-                                                        file: null as any,
-                                                    });
-                                                }
-                                            }}
-                                        >
-                                            <span className="text-xs text-gray-800">
-                                                {editUrlImage?.file == null ? (
-                                                    <Edit />
-                                                ) : (
-                                                    <CloseCircle />
-                                                )}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
                             <TextField
                                 placeholder="URL"
                                 type="text"

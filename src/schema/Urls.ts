@@ -39,10 +39,6 @@ const urlSchema = new mongoose.Schema({
         type: Object,
         default: null,
     },
-    exploreByAll: {
-        type: Boolean,
-        default: false,
-    },
 });
 
 // Clear existing model to force schema update

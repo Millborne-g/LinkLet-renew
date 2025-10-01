@@ -9,8 +9,6 @@ import instagramLogo from "../../public/InstagramLogo.png";
 import twitter from "../../public/Twitter.png";
 import twitterLogo from "../../public/TwitterLogo.png";
 import character from "../../public/character.png";
-import sampleUser1 from "../../public/SampleUser1.png";
-import sampleUser2 from "../../public/SampleUser2.png";
 
 import Image from "next/image";
 import {
@@ -55,12 +53,6 @@ export default function Home() {
     const [userEmail, setUserEmail] = useState("");
     const [collections, setCollections] = useState<Collection[]>([]);
     const [isLoadingCollections, setIsLoadingCollections] = useState(true);
-    const [userCount, setUserCount] = useState<number | null>(null);
-    const [profileCircles] = useState([
-        { id: 1, initial: "A", color: "#6366f1", image: sampleUser1 },
-        { id: 2, initial: "B", color: "#10b981", image: sampleUser2 },
-        { id: 3, initial: "Z", color: "#f59e0b", image: null },
-    ]);
 
     // Animation variants
     const fadeInUp = {
@@ -128,20 +120,6 @@ export default function Home() {
 
     const { accessToken, refreshToken } = useAuthStore();
 
-    // Fetch user count from API
-    const fetchUserCount = async () => {
-        try {
-            const response = await api.get("/api/user-count");
-            const data = await response.data;
-
-            if (response.status === 200 && data.count !== null) {
-                setUserCount(data.count);
-            }
-        } catch (error) {
-            console.error("Error fetching user count:", error);
-        }
-    };
-
     // Fetch collections from API
     const fetchCollections = async () => {
         try {
@@ -198,7 +176,6 @@ export default function Home() {
 
     useEffect(() => {
         fetchCollections();
-        fetchUserCount();
     }, []);
 
     return (
@@ -264,104 +241,8 @@ export default function Home() {
                                     <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 transform -skew-x-12 group-hover:translate-x-full"></div>
                                     <div className="absolute inset-0 bg-gradient-to-r from-primary to-blue-600 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                 </button>
-
-                                {/* Explore Button */}
-                                <button
-                                    onClick={() => router.push("/explore")}
-                                    className="cursor-pointer group relative px-8 py-4 bg-gradient-to-r from-primary/10 to-purple-100 border-2 border-primary/20 text-primary rounded-xl font-display font-semibold hover:from-primary hover:to-purple-600 hover:text-white hover:border-primary hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 transform hover:scale-105 active:scale-95 flex items-center justify-center"
-                                >
-                                    <span className="relative z-10 flex items-center gap-2">
-                                        Explore Collections
-                                        <Link1
-                                            size="18"
-                                            color="currentColor"
-                                            className="transition-transform duration-300 group-hover:translate-x-1"
-                                        />
-                                    </span>
-                                    <div className="absolute inset-0 bg-gradient-to-r from-primary to-purple-600 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                </button>
                             </div>
                         </motion.div>
-
-                        {/* User Count Display */}
-                        {userCount && (
-                            <motion.div
-                                className="text-center md:text-left mt-4"
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.8, delay: 1.0 }}
-                            >
-                                <div className="inline-flex items-center gap-3 px-4 py-3 bg-white border border-gray-200 rounded-full shadow-sm">
-                                    {/* Profile Circles */}
-                                    <div className="flex -space-x-2">
-                                        {profileCircles.map(
-                                            (profile, index) => (
-                                                <motion.div
-                                                    key={profile.id}
-                                                    className="w-8 h-8 rounded-full border-2 border-white shadow-sm flex items-center justify-center text-xs font-semibold text-white overflow-hidden"
-                                                    style={{
-                                                        backgroundColor:
-                                                            profile.color,
-                                                    }}
-                                                    initial={{
-                                                        opacity: 0,
-                                                        scale: 0,
-                                                    }}
-                                                    animate={{
-                                                        opacity: 1,
-                                                        scale: 1,
-                                                    }}
-                                                    transition={{
-                                                        duration: 0.5,
-                                                        delay:
-                                                            1.2 + index * 0.1,
-                                                    }}
-                                                >
-                                                    {profile.image ? (
-                                                        <Image
-                                                            src={profile.image}
-                                                            alt={`User ${profile.id}`}
-                                                            className="w-full h-full object-cover"
-                                                        />
-                                                    ) : (
-                                                        <span>
-                                                            {profile.initial}
-                                                        </span>
-                                                    )}
-                                                </motion.div>
-                                            )
-                                        )}
-                                        <motion.div
-                                            className="w-8 h-8 rounded-full border-2 border-white bg-gray-200 flex items-center justify-center text-xs font-semibold text-gray-600"
-                                            initial={{ opacity: 0, scale: 0 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            transition={{
-                                                duration: 0.5,
-                                                delay: 1.5,
-                                            }}
-                                        >
-                                            +
-                                        </motion.div>
-                                    </div>
-
-                                    {/* Text */}
-                                    <div className="flex flex-col">
-                                        <span className="text-sm font-semibold text-gray-800">
-                                            {Math.floor(userCount / 10) * 10}+
-                                            users
-                                        </span>
-                                        <span className="text-xs text-gray-500">
-                                            already using LinkLET
-                                        </span>
-                                    </div>
-
-                                    {/* Status indicator */}
-                                    <div className="flex items-center gap-1">
-                                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        )}
                     </motion.div>
 
                     <div className="flex-1 flex justify-center items-center md:w-[65%] sm:w-[90%] w-full ">
@@ -601,24 +482,6 @@ export default function Home() {
                                 </div>
                             </motion.div>
                         )}
-                    </motion.div>
-
-                    <motion.div
-                        className="text-center mt-12"
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={
-                            collectionsInView
-                                ? { opacity: 1, y: 0 }
-                                : { opacity: 0, y: 30 }
-                        }
-                        transition={{ duration: 0.6, delay: 0.3 }}
-                    >
-                        <button
-                            onClick={() => router.push("/explore")}
-                            className="bg-primary text-white px-8 py-3 rounded-lg font-display font-medium hover:bg-primary/90 transition-colors duration-200"
-                        >
-                            Explore Collections
-                        </button>
                     </motion.div>
                 </div>
             </div>
@@ -1185,12 +1048,6 @@ export default function Home() {
                                 >
                                     Start Free Today
                                 </button>
-                                {/* <button
-                                    onClick={() => router.push("/explore")}
-                                    className="border border-primary text-primary px-8 py-3 rounded-lg font-display font-medium hover:bg-primary/5 transition-colors duration-200"
-                                >
-                                    Explore Collections
-                                </button> */}
                             </div>
                         </motion.div>
                     </motion.div>

@@ -22,7 +22,8 @@ const NavBar = () => {
     const isShareRoute = pathname.startsWith("/share");
 
     const { accessToken, logout, refreshToken } = useAuthStore();
-    const { urlPreviewMode, urlTemplate, setUrlTemplate, setUrlPreviewMode } = useUrlStore();
+    const { urlPreviewMode, urlTemplate, setUrlTemplate, setUrlPreviewMode } =
+        useUrlStore();
 
     const navbarOptions = [
         {
@@ -32,15 +33,6 @@ const NavBar = () => {
                 setUrlTemplate(null);
                 setUrlPreviewMode(false);
                 router.push("/home");
-            },
-        },
-        {
-            label: "Explore",
-            path: "/explore",
-            onClick: () => {
-                setUrlTemplate(null);
-                setUrlPreviewMode(false);
-                router.push("/explore");
             },
         },
         {
@@ -91,7 +83,7 @@ const NavBar = () => {
                     let res = await refreshToken();
                     if (res === null) {
                         setUrlTemplate(null);
-                        if (pathname !== "/login" && pathname !== "/signup" && pathname !== "/explore") {
+                        if (pathname !== "/login" && pathname !== "/signup") {
                             router.push("/");
                         }
                     }
